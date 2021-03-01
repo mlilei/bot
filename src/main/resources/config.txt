@@ -1,0 +1,4 @@
+word0=java|python|c++
+word1=简单|如何
+process=baiDuMobileOperation
+step=search->randomVisit->back->nextPage->randomVisit->back->nextPage->randomVisit->back->forward
