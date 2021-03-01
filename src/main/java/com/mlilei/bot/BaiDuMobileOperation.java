@@ -56,6 +56,4 @@ public class BaiDuMobileOperation implements Operation {
         delay(1000);
         webElement.click();
     }
-
-
 }
