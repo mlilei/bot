@@ -1,10 +1,8 @@
 package com.mlilei.bot;
 
-import com.alibaba.fastjson.JSON;
-import com.google.common.collect.Lists;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,25 +20,32 @@ public class BotStarter {
     private Map<String, Operation> operationMap;
 
     static {
-        final String path = BotStarter.class.getClassLoader().getResource("").getPath();
-        System.setProperty("webdriver.chrome.driver", path + "\\chromedriver.exe");
+//        final String path = BotStarter.class.getClassLoader().getResource("").getPath();
+        System.setProperty("webdriver.chrome.driver", "C:\\Program Files (x86)\\Google\\Chrome\\chromedriver.exe");
     }
 
 
     public void starter() {
 
-        String process = ConfigHelper.PROPERTIES.getProperty("process");
-        final Operation operation = operationMap.get(process);
 
-        WebDriver driver = new ChromeDriver();
-        WebDriverWait wait = new WebDriverWait(driver,10);
+        final ChromeOptions chromeOptions = new ChromeOptions();
+        chromeOptions.addArguments("--disable-blink-features=AutomationControlled");
+        chromeOptions.addArguments("user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36");
+
+//        chromeOptions.addArguments("--headless");
+
+        WebDriver driver = new ChromeDriver(chromeOptions);
+
+//        ((JavascriptExecutor)driver).executeScript("Page.addScriptToEvaluateOnNewDocumen",Files.r)
 
 
         String step = ConfigHelper.PROPERTIES.getProperty("step");
 
+        String process = ConfigHelper.PROPERTIES.getProperty("process");
+        final Operation operation = operationMap.get(process);
         for (String op : step.split("->")) {
 
-            switch (op){
+            switch (op) {
                 case "search":
                     operation.search(driver);
                     break;
