@@ -3,9 +3,15 @@ package com.mlilei.bot;
 import com.deep007.goniub.request.HttpsProxy;
 import com.deep007.goniub.selenium.mitm.GoniubChromeDriver;
 import com.deep007.goniub.selenium.mitm.GoniubChromeOptions;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Maps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -16,56 +22,73 @@ import java.util.Map;
 @Component
 public class BotGoStarter {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(BotGoStarter.class);
+
+    private static final Splitter.MapSplitter SPLITTER = Splitter.on(",").trimResults().withKeyValueSeparator("=");
+
+    private static final String STEP_SPLITTER = "->";
+
     @Autowired
     private Map<String, Operation> operationMap;
 
 
-    public void starter() {
 
+    public void starter() {
 
         final GoniubChromeOptions chromeOptions = new GoniubChromeOptions(
                 false,
                 false,
                 false,
                 null,
-                null
+                UaHelper.getUa()
         );
-
-
+        LOGGER.info("ua={}",chromeOptions.getUserAgent());
         final GoniubChromeDriver driver = new GoniubChromeDriver(chromeOptions);
 
-        String step = ConfigHelper.PROPERTIES.getProperty("step");
+        try {
+            String process = ConfigHelper.PROPERTIES.getProperty("process");
+            final Operation operation = operationMap.get(process);
 
-        String process = ConfigHelper.PROPERTIES.getProperty("process");
-        final Operation operation = operationMap.get(process);
-        for (String op : step.split("->")) {
+            String step = ConfigHelper.PROPERTIES.getProperty("step");
+            for (String node : step.split(STEP_SPLITTER)) {
 
-            switch (op) {
-                case "search":
-                    operation.search(driver);
-                    break;
-                case "nextPage":
-                    operation.nextPage(driver);
-                    break;
-                case "randomVisit":
-                    operation.randomVisit(driver);
-                    break;
-                case "back":
-                    operation.back(driver);
-                    break;
-                case "forward":
-                    operation.forward(driver);
-                    break;
-                case "downward":
-                    operation.downward(driver);
-                    break;
-                case "bottom":
-                    operation.bottom(driver);
-                    break;
-                default:
+                final String[] split = node.split("\\|");
+                String op = split[0].trim();
+                Map<String, String> params = Collections.emptyMap();
+                if (split.length > 1) {
+                    params = SPLITTER.split(split[1]);
+                }
+                LOGGER.info("op={}, params={}", op, params);
+                switch (op) {
+                    case "search":
+                        operation.search(driver, params);
+                        break;
+                    case "nextPage":
+                        operation.nextPage(driver, params);
+                        break;
+                    case "randomVisit":
+                        operation.randomVisit(driver, params);
+                        break;
+                    case "back":
+                        operation.back(driver, params);
+                        break;
+                    case "forward":
+                        operation.forward(driver, params);
+                        break;
+                    case "downward":
+                        operation.downward(driver, params);
+                        break;
+                    case "bottom":
+                        operation.bottom(driver, params);
+                        break;
+                    case "delay":
+                        operation.delay(driver, params);
+                    default:
+                }
             }
-        }
 
-        driver.quit();
+        } finally {
+            driver.quit();
+        }
     }
 }

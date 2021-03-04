@@ -1,6 +1,7 @@
 package com.mlilei.bot;
 
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.RandomUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
@@ -14,9 +15,6 @@ import java.util.Random;
  */
 public class SearchWord {
 
-    private static final Random RANDOM = new Random();
-
-
     public static String randomWord() {
         List<List<String>> allWords = Lists.newArrayList();
         for (int i = 0; i < 9; i++) {
@@ -29,8 +27,9 @@ public class SearchWord {
 
         StringBuilder word = new StringBuilder();
         for (final List<String> words : allWords) {
-            word.append(words.get(RANDOM.nextInt(words.size())));
+            word.append(words.get(RandomUtils.nextInt(0,words.size())));
         }
+
         return word.toString();
     }
 

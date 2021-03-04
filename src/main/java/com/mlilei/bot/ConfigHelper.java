@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
+import java.net.URL;
 import java.util.Properties;
 
 /**
@@ -20,15 +21,18 @@ public class ConfigHelper {
     public static final Properties PROPERTIES = new Properties();
 
     static {
-        final String path = BotStarter.class.getClassLoader().getResource("").getPath();
         try {
-            InputStream inputStream = new FileInputStream(path + "\\config.txt");
-            final InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-            PROPERTIES.load(inputStreamReader);
-            System.out.println(PROPERTIES);
-            LOGGER.info("读取配置完成");
+            InputStream inputStream = ConfigHelper.class.getClassLoader().getResourceAsStream("conf.properties");
+            if (null == inputStream) {
+                LOGGER.error("配置加载失败，文件不存在 conf.properties");
+            } else {
+                final InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                PROPERTIES.load(inputStreamReader);
+                System.out.println(PROPERTIES);
+                LOGGER.info("配置加载完成");
+            }
         } catch (Exception e) {
-            LOGGER.error("读取配置异常", e);
+            LOGGER.error("配置加载失败", e);
         }
     }
 }
