@@ -4,14 +4,12 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang3.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
-import java.util.Random;
 
 /**
  * @Author lilei
@@ -36,10 +34,10 @@ public class UaHelper {
                 while ((line = bufferedReader.readLine()) != null) {
                     uaList.add(line);
                 }
-                LOGGER.info("配置加载完成");
+                LOGGER.info("配置加载完成 ua_string.csv");
             }
         } catch (Exception e) {
-            LOGGER.error("配置加载失败", e);
+            LOGGER.error("配置加载失败 ua_string.csv", e);
         }
     }
 

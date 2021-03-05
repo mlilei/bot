@@ -1,18 +1,21 @@
 package com.mlilei.bot;
 
-import com.deep007.goniub.request.HttpsProxy;
 import com.deep007.goniub.selenium.mitm.GoniubChromeDriver;
 import com.deep007.goniub.selenium.mitm.GoniubChromeOptions;
 import com.google.common.base.Splitter;
-import com.google.common.collect.Maps;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.Duration;
+import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import static com.mlilei.bot.BotApplication.EXECUTOR_SERVICE;
+import static com.mlilei.bot.ConfigHelper.PROPERTIES;
 
 /**
  * @Author lilei
@@ -28,9 +31,34 @@ public class BotGoStarter {
 
     private static final String STEP_SPLITTER = "->";
 
+    @PostConstruct
+    public void init() {
+        EXECUTOR_SERVICE.submit(this::rateSubmit);
+        System.out.println("BotGoStarter.init over");
+    }
+
     @Autowired
     private Map<String, Operation> operationMap;
 
+    @SneakyThrows
+    public void rateSubmit() {
+        LOGGER.info("rateStarter start");
+
+        while (true) {
+
+            LOGGER.info("a task submit");
+            EXECUTOR_SERVICE.submit(this::starter);
+
+
+            try {
+                final long rate = Long.parseLong(PROPERTIES.getProperty("rate"));
+                long sleep = TimeUnit.MINUTES.toMillis(1) / rate;
+                Thread.sleep(sleep);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 
     public void starter() {
@@ -42,14 +70,14 @@ public class BotGoStarter {
                 null,
                 UaHelper.getUa()
         );
-        LOGGER.info("ua={}",chromeOptions.getUserAgent());
+        LOGGER.info("ua={}", chromeOptions.getUserAgent());
         final GoniubChromeDriver driver = new GoniubChromeDriver(chromeOptions);
 
         try {
-            String process = ConfigHelper.PROPERTIES.getProperty("process");
+            String process = PROPERTIES.getProperty("process");
             final Operation operation = operationMap.get(process);
 
-            String step = ConfigHelper.PROPERTIES.getProperty("step");
+            String step = PROPERTIES.getProperty("step");
             for (String node : step.split(STEP_SPLITTER)) {
 
                 final String[] split = node.split("\\|");
