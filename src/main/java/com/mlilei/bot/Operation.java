@@ -6,7 +6,6 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 
 import java.util.Map;
-import java.util.Random;
 
 /**
  * @Author lilei
@@ -79,4 +78,6 @@ public interface Operation {
         final String millis = params.getOrDefault("millis", "1000");
         delay(Integer.parseInt(millis));
     }
+
+    boolean checkPage(GoniubChromeDriver driver);
 }

@@ -1,6 +1,7 @@
 package com.mlilei.bot;
 
 import com.deep007.goniub.request.HttpsProxy;
+import org.apache.logging.log4j.util.Strings;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
@@ -19,7 +20,9 @@ public class ProxyHelper {
 
     public static HttpsProxy getProxy() {
         final String proxy = ConfigHelper.PROPERTIES.getProperty("proxy");
-
+        if (Strings.isEmpty(proxy)) {
+            return null;
+        }
 
         final Document document;
         try {

@@ -1,5 +1,6 @@
 package com.mlilei.bot;
 
+import com.deep007.goniub.selenium.mitm.GoniubChromeDriver;
 import org.apache.commons.lang3.RandomUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -28,12 +29,12 @@ public class BaiDuMobileOperation implements Operation {
     @Override
     public void search(WebDriver driver, Map<String, String> params) {
         driver.get("http://m.baidu.com/");
-        new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.presenceOfElementLocated(By.id("index-kw")));
+        new WebDriverWait(driver, Duration.ofSeconds(20)).until(ExpectedConditions.presenceOfElementLocated(By.id("index-kw")));
         final String word = SearchWord.randomWord();
         driver.findElement(By.id("index-kw")).sendKeys(word);
         delay(1000);
         driver.findElement(By.id("index-bn")).click();
-        new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.presenceOfElementLocated(By.id("results")));
+        new WebDriverWait(driver, Duration.ofSeconds(20)).until(ExpectedConditions.presenceOfElementLocated(By.id("results")));
     }
 
 
@@ -59,7 +60,7 @@ public class BaiDuMobileOperation implements Operation {
         //下一页
         nextPage.click();
 
-        new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.presenceOfElementLocated(By.id("results")));
+        new WebDriverWait(driver, Duration.ofSeconds(20)).until(ExpectedConditions.presenceOfElementLocated(By.id("results")));
     }
 
     @Override
@@ -81,5 +82,10 @@ public class BaiDuMobileOperation implements Operation {
         //点击进去
         webElement.click();
 
+    }
+
+    @Override
+    public boolean checkPage(GoniubChromeDriver driver) {
+        return !driver.getTitle().contains("百度安全验证");
     }
 }
