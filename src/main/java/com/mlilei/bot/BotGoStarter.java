@@ -1,9 +1,9 @@
 package com.mlilei.bot;
 
+import com.alibaba.fastjson.JSON;
 import com.deep007.goniub.selenium.mitm.GoniubChromeDriver;
 import com.deep007.goniub.selenium.mitm.GoniubChromeOptions;
 import com.google.common.base.Splitter;
-import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,50 +33,36 @@ public class BotGoStarter {
 
     @PostConstruct
     public void init() {
-        EXECUTOR_SERVICE.submit(this::rateSubmit);
-        System.out.println("BotGoStarter.init over");
+        while (true) {
+            try {
+                EXECUTOR_SERVICE.submit(this::starter);
+                final long rate = Long.parseLong(PROPERTIES.getProperty("rate"));
+                long sleep = TimeUnit.MINUTES.toMillis(1) / rate;
+                Thread.sleep(sleep);
+            } catch (Exception e) {
+                LOGGER.error("", e);
+            }
+        }
     }
 
     @Autowired
     private Map<String, Operation> operationMap;
 
-    @SneakyThrows
-    public void rateSubmit() {
-        LOGGER.info("rateStarter start");
-
-        while (true) {
-
-            LOGGER.info("a task submit");
-            EXECUTOR_SERVICE.submit(this::starter);
-
-
-            try {
-                final long rate = Long.parseLong(PROPERTIES.getProperty("rate"));
-                long sleep = TimeUnit.MINUTES.toMillis(1) / rate;
-                Thread.sleep(sleep);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
 
     public void starter() {
-
         final GoniubChromeOptions chromeOptions = new GoniubChromeOptions(
-                false,
-                false,
-                false,
-                null,
+                Boolean.parseBoolean(PROPERTIES.getProperty("disableLoadImage", "true")),
+                Boolean.parseBoolean(PROPERTIES.getProperty("headless", "true")),
+                Boolean.parseBoolean(PROPERTIES.getProperty("hideFingerprint", "false")),
+                ProxyHelper.getProxy(),
                 UaHelper.getUa()
         );
-        LOGGER.info("ua={}", chromeOptions.getUserAgent());
-        final GoniubChromeDriver driver = new GoniubChromeDriver(chromeOptions);
+        LOGGER.info("chromeOptions={}", JSON.toJSONString(chromeOptions));
 
+        final GoniubChromeDriver driver = new GoniubChromeDriver(chromeOptions);
         try {
             String process = PROPERTIES.getProperty("process");
             final Operation operation = operationMap.get(process);
-
             String step = PROPERTIES.getProperty("step");
             for (String node : step.split(STEP_SPLITTER)) {
 

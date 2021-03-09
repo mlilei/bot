@@ -15,7 +15,7 @@ public class BotApplication {
             60L, TimeUnit.SECONDS,
             new SynchronousQueue<>());
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         SpringApplication.run(BotApplication.class, args);
     }
 

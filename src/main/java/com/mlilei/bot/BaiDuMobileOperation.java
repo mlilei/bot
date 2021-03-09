@@ -4,7 +4,10 @@ import org.apache.commons.lang3.RandomUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.stereotype.Component;
@@ -13,7 +16,6 @@ import org.springframework.util.CollectionUtils;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 /**
  * @Author lilei
@@ -29,7 +31,7 @@ public class BaiDuMobileOperation implements Operation {
         new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.presenceOfElementLocated(By.id("index-kw")));
         final String word = SearchWord.randomWord();
         driver.findElement(By.id("index-kw")).sendKeys(word);
-        delay(500);
+        delay(1000);
         driver.findElement(By.id("index-bn")).click();
         new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.presenceOfElementLocated(By.id("results")));
     }
