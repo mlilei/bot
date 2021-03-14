@@ -11,9 +11,6 @@ import java.util.concurrent.TimeUnit;
 @SpringBootApplication
 public class BotApplication {
 
-    public static final ExecutorService EXECUTOR_SERVICE = new ThreadPoolExecutor(50, Integer.MAX_VALUE,
-            60L, TimeUnit.SECONDS,
-            new SynchronousQueue<>());
 
     public static void main(String[] args) {
         SpringApplication.run(BotApplication.class, args);

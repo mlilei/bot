@@ -1,4 +1,4 @@
-package com.mlilei.bot;
+package com.mlilei.bot.helper;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.RandomUtils;
